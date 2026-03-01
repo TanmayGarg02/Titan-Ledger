@@ -6,6 +6,6 @@ import java.util.UUID;
 
 @Getter
 public class LedgerEntryRequest {
-    private UUID walletID;
+    private UUID walletId;
     private Long amount;
 }
