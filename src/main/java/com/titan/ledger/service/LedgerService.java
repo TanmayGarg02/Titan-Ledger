@@ -2,6 +2,9 @@ package com.titan.ledger.service;
 
 import com.titan.ledger.dto.CreateTransactionRequest;
 import com.titan.ledger.dto.LedgerEntryRequest;
+import com.titan.ledger.exception.InsufficientBalanceException;
+import com.titan.ledger.exception.InvalidTransactionException;
+import com.titan.ledger.exception.WalletNotFoundException;
 import com.titan.ledger.model.*;
 import com.titan.ledger.repository.LedgerEntryRepository;
 import com.titan.ledger.repository.TransactionRepository;
@@ -53,8 +56,7 @@ public class LedgerService {
                         .sum();
 
         if (total != 0) {
-            throw new RuntimeException("Invalid transaction: sum must be zero");
-
+            throw new InvalidTransactionException("Transaction must be balanced (sum = 0)");
         }
 
         List<UUID> walletIds =
@@ -71,7 +73,7 @@ public class LedgerService {
                     walletRepository
                             .findByIdForUpdate(walletId)
                             .orElseThrow(() ->
-                                    new RuntimeException("Wallet not found"));
+                                    new WalletNotFoundException("Wallet not found"));
 
             walletMap.put(walletId, wallet);
 
@@ -82,7 +84,9 @@ public class LedgerService {
                 Wallet wallet = walletMap.get(entry.getWalletId());
                 long newBalance = wallet.getBalance() + entry.getAmount();
                 if (newBalance < 0) {
-                    throw new RuntimeException("Insufficient balance");
+                    throw new InsufficientBalanceException(
+                            "Insufficient balance for wallet: " + entry.getWalletId()
+                    );
                 }
             }
         }
