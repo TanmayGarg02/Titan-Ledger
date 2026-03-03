@@ -1,11 +1,8 @@
 package com.titan.ledger.controller;
 
-import com.titan.ledger.repository.WalletRepository;
+import com.titan.ledger.service.WalletService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -16,7 +13,13 @@ public class WalletController {
     private final WalletService walletService;
 
     @PostMapping
-    public UUID createWallet(@RequestParam UUID ownerId, @RequestParam String currency){
+    public UUID createWallet(@RequestParam UUID ownerId, @RequestParam String currency) {
         return walletService.createWallet(ownerId, currency);
     }
+
+    @GetMapping("/{walletId}/balance")
+    public Long getBalance(@PathVariable UUID walletId) {
+        return walletService.getBalance(walletId);
+    }
+
 }

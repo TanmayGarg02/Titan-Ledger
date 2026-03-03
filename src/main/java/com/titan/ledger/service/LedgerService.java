@@ -69,7 +69,7 @@ public class LedgerService {
         for (UUID walletId : walletIds) {
             Wallet wallet =
                     walletRepository
-                            .findByWalletId(walletId)
+                            .findByIdForUpdate(walletId)
                             .orElseThrow(() ->
                                     new RuntimeException("Wallet not found"));
 
@@ -103,7 +103,7 @@ public class LedgerService {
 
 
         for (LedgerEntryRequest entry : request.getLedgerEntryRequestList()){
-            Wallet wallet = walletRepository.findByWalletId(entry.getWalletId()).get();
+            Wallet wallet = walletRepository.findByIdForUpdate(entry.getWalletId()).get();
             wallet.updateBalance(wallet.getBalance() + entry.getAmount());
         }
 
